@@ -1,5 +1,5 @@
 import json
-import xml.etree.ElementTree as ET 
+import xml.etree.ElementTree as ET
 
 class WithSetAttributes:
     def __init__(self, **kwargs):
@@ -9,11 +9,10 @@ class WithSetAttributes:
 class WithEqualDictionary:
     def dictionary_with_attributes(self):
         lst = list(self.__dict__.keys())
-
         dictionary = {}
 
         for attr in lst:
-            if isinstance(self.__dict__[attr], (str, int, list, tuple, dict,float)):
+            if isinstance(self.__dict__[attr], (str, int,float, list, tuple, dict)):
                 dictionary[attr] = self.__dict__[attr]
 
             else:
@@ -32,6 +31,8 @@ class WithEqualAttributes(WithEqualDictionary):
         dictionary2 =other.dictionary_with_attributes()
 
         return dictionary1 == dictionary2
+
+        # return self.__dict__ == other.__dict__
 
 
 
@@ -56,9 +57,30 @@ class Jsonable(WithEqualDictionary):
 
         return cls(**attributes)
 
-
 class Xmlable:
     def to_xml(self):
+        parts = ['<{}>'.format(self.__class__.__name__)]
+        for name, value in self.__dict__.items():
+            if not isinstance(value, (str, int, tuple, list, dict,float)):
+                parts.append(value.to_xml())
+            else:
+                parts.append('<{0}>{1}</{0}>'.format(name,value))      
+
+        parts.append('</{}>'.format(self.__class__.__name__))
+
+        return ''.join(parts)
+
+    @classmethod
+    def from_xml(cls, xml_string):
+        root = ET.fromstring(xml_string)
+
+        if root.tag != cls.__name__:
+            raise ValueError('Wrong type')
+
+
+
+
+
+
+
         
-
-
