@@ -8,10 +8,8 @@ from mixins import Jsonable, WithSetAttributes, WithEqualAttributes, Xmlable
 class Panda(Jsonable, Xmlable, WithSetAttributes, WithEqualAttributes):
     pass
 
-
 class Car(Jsonable, Xmlable, WithSetAttributes, WithEqualAttributes):
     pass
-
 
 class TestJsonable(unittest.TestCase):
     def test_to_json_returns_empty_json_for_objects_with_no_arguments(self):
@@ -67,30 +65,60 @@ class TestJsonable(unittest.TestCase):
 
         self.assertEqual(panda_result, json.dumps(panda_expexted, indent=4))
 
-    # def test_to_json_returns_correct_json_with_arguments_of_not_jsonable_type_same_class(self):
-    #     panda = Panda(name='Marto', friends=[Panda(name='Ivo'), Panda(name = 'Anni')])
+    def test_to_json_returns_correct_json_with_arguments_of_not_jsonable_type_list_with_jsonable_type(self):
+        panda = Panda(name='Marto', friends=[Panda(name='Ivo'), Panda(name = 'Anni')])
 
-    #     panda_expexted = {
-    #         'type': Panda.__name__,
-    #         'dict': {
-    #             'name': 'Marto',
-    #             'friends': [{
-    #                 'type': Panda.__name__,
-    #                 'dict': {
-    #                     'name': 'Ivo'
-    #                 }
-    #             }, {
-    #                 'type': Panda.__name__,
-    #                 'dict': {
-    #                     'name': 'Anni'
-    #                 } 
-    #             }]
-    #         }
-    #     }
-    #     panda_result = panda.to_json(indent=4)
+        panda_expexted = {
+            'type': Panda.__name__,
+            'dict': {
+                'name': 'Marto',
+                'friends': [{
+                    'type': Panda.__name__,
+                    'dict': {
+                        'name': 'Ivo'
+                    }
+                }, {
+                    'type': Panda.__name__,
+                    'dict': {
+                        'name': 'Anni'
+                    } 
+                }]
+            }
+        }
+        panda_result = panda.to_json(indent=4)
       
 
-    #     self.assertEqual(panda_result, json.dumps(panda_expexted, indent=4))
+        self.assertEqual(panda_result, json.dumps(panda_expexted, indent=4))
+
+    def test_to_json_returns_correct_json_with_arguments_of_not_jsonable_type_dict_with_jsonable_type(self):
+        panda = Panda(name='Marto',
+         friends = {'friend1' : Panda(name='Ivo'),'friend2' : Panda(name = 'Anni')})
+
+        panda_expexted = {
+            'type': Panda.__name__,
+            'dict': {
+                'name': 'Marto',
+                'friends': {
+                    'friend1' : {
+                            'type': Panda.__name__,
+                            'dict': {
+                                'name': 'Ivo'
+                            }
+                     }, 
+                    'friend2' : {
+                            'type': Panda.__name__,
+                            'dict': {
+                                'name': 'Anni'
+                            } 
+                    }
+                    
+                }
+            }
+        }
+        panda_result = panda.to_json(indent=4)
+      
+
+        self.assertEqual(panda_result, json.dumps(panda_expexted, indent=4))
 
     def test_from_json_with_wrong_class_type(self):
         car = Car()

@@ -6,41 +6,44 @@ class WithSetAttributes:
         for name, value in kwargs.items():
             setattr(self, name, value)
 
-class WithEqualDictionary:
-    def dictionary_with_attributes(self):
-        lst = list(self.__dict__.keys())
-        dictionary = {}
-
-        for attr in lst:
-            if isinstance(self.__dict__[attr], (str, int,float, list, tuple, dict)):
-                dictionary[attr] = self.__dict__[attr]
-
-            else:
-                new_name = self.__dict__[attr].__class__.__name__
-
-                dictionary[attr] = {'type': new_name,'dict': self.__dict__[attr].__dict__}
-
-        return dictionary
-
-class WithEqualAttributes(WithEqualDictionary):
+class WithEqualAttributes:
     def __eq__(self, other):
-        lst1 = list(self.__dict__.keys())
-        lst2 = list(other.__dict__.keys())
+        return self.__dict__ == other.__dict__
 
-        dictionary1 =self.dictionary_with_attributes()
-        dictionary2 =other.dictionary_with_attributes()
-
-        return dictionary1 == dictionary2
-
-        # return self.__dict__ == other.__dict__
-
-
-
-class Jsonable(WithEqualDictionary):
+class Jsonable:
     def to_json(self, indent=4):
         name = self.__class__.__name__
         
-        dictionary = self.dictionary_with_attributes()
+        dictionary = self.__dict__
+
+        for key, value in dictionary.items():
+            if not isinstance(value, (str,int,float, list, tuple, dict)):
+
+                if Jsonable in type(value).mro():
+                    new_name = value.__class__.__name__
+
+                    dictionary[key] = {'type': new_name,'dict': value.__dict__}
+            elif isinstance(value, list):
+
+                for i in range(len(value)):
+    
+                    if not isinstance(value[i], (str,int,float, list, tuple, dict)):
+
+                        if Jsonable in type(value[i]).mro():
+                            new_name = value[i].__class__.__name__
+
+                            value[i] = {'type': new_name,'dict': value[i].__dict__}
+            elif isinstance(value, dict):
+                
+                for k, v in value.items():
+                    if not isinstance(v, (str,int,float, list, tuple, dict)):
+
+                        if Jsonable in type(v).mro():
+                            new_name2 = v.__class__.__name__
+
+                            value[k] = {'type': new_name2,'dict': v.__dict__}
+
+
 
         return json.dumps({'type': name, 'dict': dictionary}, indent = indent)
 
