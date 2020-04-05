@@ -1,5 +1,6 @@
 import sys
 
+
 class Term:
     def __init__(self, coefficient, power):
         self.coefficient = coefficient
@@ -41,7 +42,7 @@ class Term:
         else:
             if term_as_string[0] == 'x':
                 if len(term_as_string) == 1:
-                    return ('1','1')
+                    return ('1', '1')
                 else:
                     term_as_string = term_as_string.split("x^")
                     return ('1', term_as_string[1])
@@ -52,6 +53,7 @@ class Term:
                     term_as_string = term_as_string.split("*x^")
                     return (term_as_string[0], term_as_string[1])
 
+
 class Polynomial:
     def __init__(self, terms):
         self.terms = terms
@@ -61,20 +63,20 @@ class Polynomial:
         list_with_derivatives = []
         count_zero_derivatives = 0
 
-        #list with every derivative
+        # list with every derivative
         for i in range(len(self.terms)):
-    
+
             if self.terms[i].derivative() != '0':
                 each_derivative = "".join(self.terms[i].derivative())
                 list_with_derivatives.append(each_derivative)
             else:
                 count_zero_derivatives += 1
 
-        #case all derivatives are zero
+        # case all derivatives are zero
         if count_zero_derivatives == len(self.terms):
             return "0"
 
-        #string with all derivatives
+        # string with all derivatives
         res = ""
         for i in range(len(list_with_derivatives) - 1):
             res += list_with_derivatives[i] + '+'
@@ -91,12 +93,9 @@ class Polynomial:
         for term in polynomial:
             t = Term.convert_into_term(term)
 
-            lst.append(Term(int(t[0]),int(t[1])))
+            lst.append(Term(int(t[0]), int(t[1])))
 
         poly = cls(lst)
         res = poly.derivative()
 
         return res
-
-if __name__ == '__main__':
-    main()
