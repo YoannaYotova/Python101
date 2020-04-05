@@ -1,9 +1,10 @@
 import unittest
 from sort_fractions import sort_fractions, checking_for_zero_denominator
 
+
 class TestCheckingForZeroDenominator(unittest.TestCase):
     def test_for_zero_denominator(self):
-        fractions = [(3,0) , (1,2)]
+        fractions = [(3, 0), (1, 2)]
         exc = None
 
         try:
@@ -21,10 +22,10 @@ class TestSortFractions(unittest.TestCase):
 
         res = sort_fractions(fractions)
 
-        self.assertEqual(res,fractions)
+        self.assertEqual(res, fractions)
 
     def test_with_one_fraction(self):
-        fractions = [(1,2)]
+        fractions = [(1, 2)]
 
         res = sort_fractions(fractions)
 
@@ -40,9 +41,9 @@ class TestSortFractions(unittest.TestCase):
     def test_with_more_fractions_and_false_ascending(self):
         fractions = [(5, 6), (22, 78), (22, 7), (7, 8), (9, 6), (15, 32)]
 
-        res = sort_fractions(fractions, ascending = False)
+        res = sort_fractions(fractions, ascending=False)
 
-        self.assertEqual(res,[(22, 7), (9, 6), (7, 8), (5, 6), (15, 32), (22, 78)])
+        self.assertEqual(res, [(22, 7), (9, 6), (7, 8), (5, 6), (15, 32), (22, 78)])
 
 
 if __name__ == '__main__':
