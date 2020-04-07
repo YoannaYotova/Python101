@@ -1,0 +1,3 @@
+get_low was called and took 02.00 seconds to complete
+get_low was called and took 00.23 seconds to complete
+get_low was called and took 02.10 seconds to complete
