@@ -42,8 +42,27 @@ def performance(file_name):
 
 @performance('log.txt')
 def something_heavy():
-    time.sleep(2)
+    time.sleep(2.10)
     return 'I am done!'
+
+
+def silence(file_name):
+    def inner_func(func):
+        def take_the_errors(*func_arg):
+            try:
+                func(*func_arg)
+            except Exception as err:
+                arg = [i for i in func_arg]
+                with open(file_name, 'a') as f:
+                    f.write(f'Calling {func.__name__} raised an error - {type(err).__name__}: {err} Provided arguments: {tuple(arg)}\n')
+        return take_the_errors
+    return inner_func
+
+
+@silence('errors.txt')
+def foo(x):
+    if x > 50:
+        raise ValueError('Omg.')
 
 
 def main():
@@ -51,7 +70,9 @@ def main():
     # print(say_hello('Anni'))
     # print(say_hello(4))
 
-    print(something_heavy())
+    # print(something_heavy())
+    foo(10)
+    foo(300)
 
 
 if __name__ == '__main__':
