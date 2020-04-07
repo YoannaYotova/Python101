@@ -1,3 +1,7 @@
+import time
+import datetime
+
+
 def accepts(*types_of_arg):
     def inner_func(func):
         def check_for_right_arg(*func_arg):
@@ -22,10 +26,33 @@ def deposit(name, money):
     print(f'{name} sends {money} $')
 
 
-# deposit('Anni', 23)
-print(say_hello('Anni'))
-# print(say_hello(4))
-
-
 def performance(file_name):
-    pass
+    def inner_func(func):
+        def write_in_file():
+            startTime = datetime.datetime.now()
+            func()
+            endTime = datetime.datetime.now()
+            elapsedTime = endTime - startTime
+            with open(file_name, 'a') as f:
+                f.write(f'get_low was called and took {str(elapsedTime)[5:10]} seconds to complete\n')
+            return func()
+        return write_in_file
+    return inner_func
+
+
+@performance('log.txt')
+def something_heavy():
+    time.sleep(2)
+    return 'I am done!'
+
+
+def main():
+    # deposit('Anni', 23)
+    # print(say_hello('Anni'))
+    # print(say_hello(4))
+
+    print(something_heavy())
+
+
+if __name__ == '__main__':
+    main()
