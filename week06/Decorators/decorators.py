@@ -1,5 +1,4 @@
 import time
-import datetime
 
 
 def accepts(*types_of_arg):
@@ -28,14 +27,14 @@ def deposit(name, money):
 
 def performance(file_name):
     def inner_func(func):
-        def write_in_file():
-            startTime = datetime.datetime.now()
-            func()
-            endTime = datetime.datetime.now()
-            elapsedTime = endTime - startTime
+        def write_in_file(*args, **kwargs):
+            startTime = time.time()
+            res = func(*args, **kwargs)
+            endTime = time.time() - startTime
+
             with open(file_name, 'a') as f:
-                f.write(f'get_low was called and took {str(elapsedTime)[5:10]} seconds to complete\n')
-            return func()
+                f.write(f'get_low was called and took {endTime} seconds to complete\n')
+            return res
         return write_in_file
     return inner_func
 
@@ -65,14 +64,37 @@ def foo(x):
         raise ValueError('Omg.')
 
 
+def required(func):
+    def checking_for_overriden_method(instance, *arg, **kwargs):
+        if func.__name__ not in instance.__dict__:
+            raise AttributeError(f'All classes that inherit from "{instance.__class__.__name__}" must provide "{func.__name__}" method')
+
+        return func(instance, *arg, **kwargs)
+    return checking_for_overriden_method
+
+
+class Animal:
+    @required
+    def eat(self, food):
+        print(food)
+
+
+class Panda(Animal):
+    # def eat(self, food):
+    #     print('Panda eats: ', food)
+    pass
+
+
 def main():
     # deposit('Anni', 23)
     # print(say_hello('Anni'))
     # print(say_hello(4))
 
-    # print(something_heavy())
-    foo(10)
-    foo(300)
+    # something_heavy()
+    # foo(10)
+    # foo(300)
+    a = Panda()
+    a.eat('bamboo')
 
 
 if __name__ == '__main__':
