@@ -23,17 +23,6 @@ def change_precision(num):
     except Exception:
         # print('In except')
         pass
-    else:
-        # print('In else')
-        pass
     finally:
         # print('In finally')
         getcontext().prec = 28
-        pass
-
-
-# with change_precision(2):
-#     print(Decimal('1.123132132') + Decimal('2.23232'))
-
-
-# print(Decimal('1.123132132') + Decimal('2.23232'))
