@@ -1,3 +1,6 @@
+from utls import search_in_dict
+
+
 def deep_find(data, key):
     if key in data:
         return data[key]
@@ -32,26 +35,16 @@ def deep_find2(data, key):
             return data[node]
 
         if isinstance(data[node], dict):
-            for k, v in data[node].items():
-                if k not in visited:
-                    # print(k)
-                    if k == key:
-                        # print(data[node][k])
-                        return data[node][k]
-
-                    visited.append(k)
-                    stack.append(k)
+            res = search_in_dict(data[node], key, visited, stack)
+            if res is not None:
+                return res
 
         elif isinstance(data[node], list):
             for element in data[node]:
                 if isinstance(element, dict):
-                    for k, v in element.items():
-                        if k not in visited:
-                            if k == key:
-                                return element[k]
-
-                            visited.append(k)
-                            stack.append(k)
+                    res = search_in_dict(element, key, visited, stack)
+                    if res is not None:
+                        return res
 
 
 # BFS
@@ -68,23 +61,13 @@ def deep_find3(data, key):
             return data[node]
 
         if isinstance(data[node], dict):
-            for k, v in data[node].items():
-                if k not in visited:
-                    # print(k)
-                    if k == key:
-                        # print(data[node][k])
-                        return data[node][k]
-
-                    visited.append(k)
-                    queue.append(k)
+            res = search_in_dict(data[node], key, visited, queue)
+            if res is not None:
+                return res
 
         elif isinstance(data[node], list):
             for element in data[node]:
                 if isinstance(element, dict):
-                    for k, v in element.items():
-                        if k not in visited:
-                            if k == key:
-                                return element[k]
-
-                            visited.append(k)
-                            queue.append(k)
+                    res = search_in_dict(element, key, visited, queue)
+                    if res is not None:
+                        return res
