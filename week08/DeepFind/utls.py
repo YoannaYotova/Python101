@@ -4,5 +4,5 @@ def search_in_dict(data, key, visited, structure):
             if k == key:
                 return data[k]
 
-            visited.append(k)
-            structure.append(k)
+            visited.append((k, v))
+            structure.append((k, v))

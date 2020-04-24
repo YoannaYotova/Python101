@@ -1,5 +1,5 @@
 import unittest
-from deep_find import deep_find, deep_find2, deep_find3
+from deep_find import deep_find, deep_find_dfs, deep_find_bfs
 
 
 class TestDeepFind(unittest.TestCase):
@@ -88,10 +88,11 @@ class TestDeepFindDFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find(root, 'Anni')
+        res = deep_find_dfs(root, 'Anni')
 
         self.assertIsNone(res)
 
+    # # TODO
     def test_deep_find_dfs_with_simple_dictionary(self):
         root = {
             'a': {
@@ -105,9 +106,9 @@ class TestDeepFindDFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find2(root, 'aa')
+        res = deep_find_dfs(root, 'ani')
 
-        self.assertEqual(res, 2)
+        self.assertEqual(res, 23)
 
     def test_deep_find_dfs_with_more_occurances_in_the_dictionary_returns_first_occurance(self):
         root = {
@@ -123,7 +124,7 @@ class TestDeepFindDFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find2(root, 'aa')
+        res = deep_find_dfs(root, 'aa')
 
         self.assertEqual(res, ['doggy', 'catty'])
 
@@ -141,7 +142,7 @@ class TestDeepFindDFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find2(root, 'doggy')
+        res = deep_find_dfs(root, 'doggy')
 
         self.assertEqual(res, 2)
 
@@ -160,7 +161,7 @@ class TestDeepFindBFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find(root, 'Anni')
+        res = deep_find_bfs(root, 'Anni')
 
         self.assertIsNone(res)
 
@@ -177,7 +178,7 @@ class TestDeepFindBFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find3(root, 'aa')
+        res = deep_find_bfs(root, 'aa')
 
         self.assertEqual(res, 2)
 
@@ -195,7 +196,7 @@ class TestDeepFindBFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find3(root, 'aa')
+        res = deep_find_bfs(root, 'aa')
 
         self.assertEqual(res, 2)
 
@@ -213,7 +214,7 @@ class TestDeepFindBFS(unittest.TestCase):
             'c': 3
         }
 
-        res = deep_find3(root, 'doggy')
+        res = deep_find_bfs(root, 'doggy')
 
         self.assertEqual(res, 2)
 

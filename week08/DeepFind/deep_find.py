@@ -22,8 +22,8 @@ def deep_find(data, key):
 
 
 # DFS
-def deep_find2(data, key):
-    stack = list(data.keys())
+def deep_find_dfs(data, key):
+    stack = list(data.items())
     visited = []
 
     while len(stack) > 0:
@@ -31,16 +31,18 @@ def deep_find2(data, key):
         node = stack[-1]
         stack.pop()
 
-        if node == key:
-            return data[node]
+        # working with tuples
+        # first element of the nodi is key, second is the value
+        if node[0] == key:
+            return node[1]
 
-        if isinstance(data[node], dict):
-            res = search_in_dict(data[node], key, visited, stack)
+        if isinstance(node[1], dict):
+            res = search_in_dict(node[1], key, visited, stack)
             if res is not None:
                 return res
 
-        elif isinstance(data[node], list):
-            for element in data[node]:
+        elif isinstance(node[1], list):
+            for element in node[1]:
                 if isinstance(element, dict):
                     res = search_in_dict(element, key, visited, stack)
                     if res is not None:
@@ -48,8 +50,8 @@ def deep_find2(data, key):
 
 
 # BFS
-def deep_find3(data, key):
-    queue = list(data.keys())
+def deep_find_bfs(data, key):
+    queue = list(data.items())
     visited = []
 
     while len(queue) > 0:
@@ -57,16 +59,18 @@ def deep_find3(data, key):
         node = queue[0]
         queue.remove(node)
 
-        if node == key:
-            return data[node]
+        # working with tuples
+        # first element of the nodi is key, second is the value
+        if node[0] == key:
+            return node[1]
 
-        if isinstance(data[node], dict):
-            res = search_in_dict(data[node], key, visited, queue)
+        if isinstance(node[1], dict):
+            res = search_in_dict(node[1], key, visited, queue)
             if res is not None:
                 return res
 
-        elif isinstance(data[node], list):
-            for element in data[node]:
+        elif isinstance(node[1], list):
+            for element in node[1]:
                 if isinstance(element, dict):
                     res = search_in_dict(element, key, visited, queue)
                     if res is not None:
