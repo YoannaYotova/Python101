@@ -31,11 +31,12 @@ class TestLegalMoves(unittest.TestCase):
         lake2 = '<_>><'
         res2 = legal_moves(lake2)
 
-        expected = []
-        expected2 = []
+        lake3 = '<_>><'
+        res3 = legal_moves(lake3)
 
-        self.assertEqual(res, expected)
-        self.assertEqual(res2, expected2)
+        self.assertEqual(res, [])
+        self.assertEqual(res2, [])
+        self.assertEqual(res3, [])
 
     def test_legal_moves_with_not_the_started_position_and_shuffled_frogs(self):
         lake = '><><_'

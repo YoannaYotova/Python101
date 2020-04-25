@@ -33,22 +33,33 @@ def legal_moves(position):
     return all_pos
 
 
-def solution(position, lily, end, stack=None):
+def solution(position, end, path=[]):
+    # print('path', path)
+    cur_path = path + [position]
+    # print('cur_path', cur_path)
     if position == end:
-        print(end)
-        return "SOLVED"
-    else:
-        if stack is None:
-            stack = [position]
-        else:
-            stack.append(position)
+        return cur_path
+    moves = legal_moves(position)
+
+    if len(moves) == 0:
+        return None
+
+    for node in moves:
+        if node not in cur_path:
+            new_path = solution(node, end, cur_path)
+            if new_path:
+                return new_path
+
+    return None
 
 
 def main():
     frogs = int(input('How many frogs are in the lake? '))
 
-    print(generate_start(frogs))
-    print(generate_final(frogs))
+    right_path = solution(generate_start(frogs), generate_final(frogs))
+    print('Right Path')
+    for step in right_path:
+        print(step)
 
 
 if __name__ == '__main__':
