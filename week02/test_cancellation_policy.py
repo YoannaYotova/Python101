@@ -8,6 +8,7 @@ from cancellation_policy import (
     get_current_condition,
     sort_conditions
 )
+from unittest.mock import patch
 
 
 class TestValidateConditions(unittest.TestCase):
@@ -176,46 +177,55 @@ class TestGetCurrentCondition(unittest.TestCase):
         self.assertEqual(result, 100)
 
 
+# TODO
 class TestGetCancellationPolicy(unittest.TestCase):
-    def test_with_now_equal_to_booking_start_should_raise_error(self):
+    @patch('cancellation_policy.datetime')
+    def test_with_now_equal_to_booking_start_should_raise_error(self, datetime_mock):
         conditions = [{'percent': 50}]
-        booking_start = datetime.now()
-        now = booking_start
+
+        datetime_mock.now.return_value = datetime(year=2020, month=4, day=25, hour=12, minute=33, second=22)
+        booking_start = datetime_mock.now()
         exc = None
 
         try:
-            get_cancellation_policy(conditions, 10, booking_start, now)
+            get_cancellation_policy(conditions, 10, booking_start)
         except Exception as err:
             exc = err
 
         self.assertIsNotNone(exc)
         self.assertEqual(str(exc), 'Invalid booking start.')
 
-    def test_with_now_later_than_booking_start_should_raise_error(self):
+    @patch('cancellation_policy.datetime')
+    def test_with_now_later_than_booking_start_should_raise_error(self, datetime_mock):
         conditions = [{'percent': 50}]
-        booking_start = datetime.now()
-        now = booking_start + timedelta(hours=1)
+
+        datetime_mock.now.return_value = datetime(year=2020, month=4, day=25, hour=12, minute=33, second=22)
+        booking_start = datetime_mock.now() - timedelta(hours=1)
+        # print(datetime_mock.now())
         exc = None
 
         try:
-            get_cancellation_policy(conditions, 10, booking_start, now)
+            get_cancellation_policy(conditions, 10, booking_start)
         except Exception as err:
             exc = err
 
         self.assertIsNotNone(exc)
         self.assertEqual(str(exc), 'Invalid booking start.')
 
-    def test_cancellation_fee_with_only_one_condition(self):
+    @patch('cancellation_policy.datetime')
+    def test_cancellation_fee_with_only_one_condition(self, datetime_mock):
         conditions = [{'percent': 50}]
         price = 100
-        booking_start = datetime.now()
-        now = booking_start - timedelta(hours=100)
 
-        result = get_cancellation_policy(conditions, price, booking_start, now)
+        datetime_mock.now.return_value = datetime(year=2020, month=4, day=25, hour=12, minute=33, second=22)
+        booking_start = datetime_mock.now() + timedelta(hours=100)
+
+        result = get_cancellation_policy(conditions, price, booking_start)
 
         self.assertEqual(result, 50.0)
 
-    def test_cancellation_fee_with_several_conditions_and_now_in_them(self):
+    @patch('cancellation_policy.datetime')
+    def test_cancellation_fee_with_several_conditions_and_now_in_them(self, datetime_mock):
         conditions = [
             {'hours': 24, 'percent': 10},
             {'hours': 12, 'percent': 50},
@@ -223,14 +233,16 @@ class TestGetCancellationPolicy(unittest.TestCase):
             {'percent': 100}
         ]
         price = 100
-        booking_start = datetime.now()
-        now = booking_start - timedelta(hours=10)
 
-        result = get_cancellation_policy(conditions, price, booking_start, now)
+        datetime_mock.now.return_value = datetime(year=2020, month=4, day=25, hour=12, minute=33, second=22)
+        booking_start = datetime_mock.now() + timedelta(hours=10)
+
+        result = get_cancellation_policy(conditions, price, booking_start)
 
         self.assertEqual(result, 80.0)
 
-    def test_cancellation_fee_with_several_conditions_and_now_in_them_and_decimal_percent(self):
+    @patch('cancellation_policy.datetime')
+    def test_cancellation_fee_with_several_conditions_and_now_in_them_and_decimal_percent(self, datetime_mock):
         conditions = [
             {'hours': 24, 'percent': 10},
             {'hours': 12, 'percent': 50},
@@ -238,10 +250,10 @@ class TestGetCancellationPolicy(unittest.TestCase):
             {'percent': 100}
         ]
         price = 200
-        booking_start = datetime.now()
-        now = booking_start - timedelta(hours=10)
+        datetime_mock.now.return_value = datetime(year=2020, month=4, day=25, hour=12, minute=33, second=22)
+        booking_start = datetime_mock.now() + timedelta(hours=10)
 
-        result = get_cancellation_policy(conditions, price, booking_start, now)
+        result = get_cancellation_policy(conditions, price, booking_start)
 
         self.assertEqual(result, price * (65.5 / 100))
 
