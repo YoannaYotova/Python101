@@ -1,52 +1,60 @@
 def generate_start(frogs):
     left_frogs = '>' * (frogs // 2)
-    rigth_frogs = '<' * (frogs // 2)
-    return f'{left_frogs}_{rigth_frogs}'
+    right_frogs = '<' * (frogs // 2)
+    return f'{left_frogs}_{right_frogs}'
 
 
-def generate_final(frogs):
+def generate_end(frogs):
     left_frogs = '<' * (frogs // 2)
-    rigth_frogs = '>' * (frogs // 2)
-    return f'{left_frogs}_{rigth_frogs}'
+    right_frogs = '>' * (frogs // 2)
+    return f'{left_frogs}_{right_frogs}'
 
 
-def legal_moves(position):
+def move_frog(path, frog_position, lily_position):
+    current_pos = list(path)
+    current_pos[frog_position], current_pos[lily_position] = current_pos[lily_position], current_pos[frog_position]
+    return ''.join(current_pos)
+
+
+def possible_moves(position):
     lily = position.find('_')
     all_pos = []
     if lily - 1 >= 0 and position[lily - 1] == '>':
-        swaped = list(position)
-        swaped[lily - 1], swaped[lily] = swaped[lily], swaped[lily - 1]
-        all_pos.append(''.join(swaped))
+        movement = move_frog(position, lily - 1, lily)
+        all_pos.append(movement)
+
     if lily - 2 >= 0 and position[lily - 2] == '>':
-        swaped = list(position)
-        swaped[lily - 2], swaped[lily] = swaped[lily], swaped[lily - 2]
-        all_pos.append(''.join(swaped))
+        movement = move_frog(position, lily - 2, lily)
+        all_pos.append(movement)
+
     if lily + 1 < len(position) and position[lily + 1] == '<':
-        swaped = list(position)
-        swaped[lily + 1], swaped[lily] = swaped[lily], swaped[lily + 1]
-        all_pos.append(''.join(swaped))
+        movement = move_frog(position, lily + 1, lily)
+        all_pos.append(movement)
+
     if lily + 2 < len(position) and position[lily + 2] == '<':
-        swaped = list(position)
-        swaped[lily + 2], swaped[lily] = swaped[lily], swaped[lily + 2]
-        all_pos.append(''.join(swaped))
+        movement = move_frog(position, lily + 2, lily)
+        all_pos.append(movement)
 
     return all_pos
 
 
-def solution(position, end, path=[]):
-    # print('path', path)
-    cur_path = path + [position]
-    # print('cur_path', cur_path)
+def find_path(position, end, path=None):
+    if path is None:
+        path = []
+
+    current_path = path[:]
+    current_path.append(position)
+
     if position == end:
-        return cur_path
-    moves = legal_moves(position)
+        return current_path
+    moves = possible_moves(position)
 
     if len(moves) == 0:
         return None
 
     for node in moves:
-        if node not in cur_path:
-            new_path = solution(node, end, cur_path)
+        if node not in current_path:
+            new_path = find_path(node, end, path=current_path)
             if new_path:
                 return new_path
 
@@ -55,8 +63,9 @@ def solution(position, end, path=[]):
 
 def main():
     frogs = int(input('How many frogs are in the lake? '))
-
-    right_path = solution(generate_start(frogs), generate_final(frogs))
+    start = generate_start(frogs)
+    end = generate_end(frogs)
+    right_path = find_path(start, end)
     print('Right Path')
     for step in right_path:
         print(step)
