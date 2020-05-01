@@ -38,13 +38,14 @@ SELECT maker, AVG(price) AS 'avg_price'
 
 # Напишете заявка, която извежда средната 
 # цена на компютрите и лаптопите за производител ‘B’
-SELECT product.maker, AVG(data.price) AS 'avg_price' 
-  FROM (SELECT * FROM laptop 
-  	      UNION 
-  	      SELECT * FROM pc) AS data 
+SELECT AVG(data.price) 
+  FROM (SELECT model, price 
+  	      FROM laptop  
+     	  UNION ALL 
+          SELECT model, price 
+            FROM pc) AS data 
   JOIN product ON product.model = data.model 
-  GROUP BY product.maker 
-  HAVING product.maker = 'B';
+  WHERE product.maker = 'B';  
 
 # Напишете заявка, която извежда производителите, 
 # които са произвели поне по 3 различни модела компютъра. 
