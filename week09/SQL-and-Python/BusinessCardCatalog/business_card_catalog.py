@@ -1,5 +1,14 @@
 import sqlite3
 
+def pritnting(contact):
+    print('\n###############\n')
+    print('Id: ', contact[0])
+    print('Full name: ', contact[1])
+    print('Email: ', contact[2])
+    print('Age: ', contact[3])
+    print('Phone: ', contact[4])
+    print('Additional contact: ', contact[5])
+    print('\n###############\n')
 
 def create_database():
     connection = sqlite3.connect('business_card_catalog.db')
@@ -55,17 +64,80 @@ def add():
     connection.commit()
     connection.close()
 
+def list():
+    print('''
+        #############
+        ###Contacts###
+        #############
+        ''')
+    connection = sqlite3.connect('business_card_catalog.db')
+    cursor = connection.cursor()
+    all_contacts = '''
+        SELECT * FROM users
+        '''
+    cursor.execute(all_contacts)
+    contacts = cursor.fetchall()
+    for contact in contacts:
+        print(f'ID:  {contact[0]},  Email: {contact[2]},  Full name:  {contact[1]}')
+
+    connection.close()
+
+
+def get():
+    contact_id = int(input('Enter id: '))
+    print('Contact info:')
+    connection = sqlite3.connect('business_card_catalog.db')
+    cursor = connection.cursor()
+    contact = '''
+        SELECT * FROM users WHERE id = (?)
+        '''
+    cursor.execute(contact, (contact_id, ))
+    contact = cursor.fetchone()
+    pritnting(contact)
+
+    connection.close()
+
+
+def delete():
+    contact_id = int(input('Enter id: '))
+    connection = sqlite3.connect('business_card_catalog.db')
+    cursor = connection.cursor()
+    contact = '''
+        SELECT * FROM users WHERE id = (?)
+        '''
+    cursor.execute(contact, (contact_id, ))
+    contact = cursor.fetchone()
+    deleting = '''
+        DELETE FROM users WHERE id = (?)
+        '''
+    cursor.execute(deleting, (contact_id, ))
+    connection.commit()
+    print('Following contact is deleted successfully: ')
+    pritnting(contact)
+
+    connection.close()  
+
 
 def main():
     create_database()
-    print('''Hello! This is your business card catalog.\
-        What would you like? (enter "help" to list all available options)''')
+    print('''
+        Hello! This is your business card catalog.
+        What would you like? (enter "help" to list all available options)
+        ''')
     while True:
         command = input('Enter command: ')
         if command == 'add':
             add()
         elif command == 'help':
             help()
+        elif command == 'list':
+            list()
+        elif command == 'get':
+            get()
+        elif command == 'delete':
+            delete()
+        else:
+            break
 
 
 if __name__ == '__main__':
