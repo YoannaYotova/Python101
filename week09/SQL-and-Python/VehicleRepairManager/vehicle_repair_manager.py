@@ -1,5 +1,6 @@
 import sqlite3
 from tabulate import tabulate
+from random
 
 
 def create_tables():
@@ -193,6 +194,96 @@ def add_vehicle(*, user_name):
     conection.commit()
     conection.close()
 
+    print('Thank you! You added new personal vehicle!')
+
+
+def save_repair_hour(*, user_name, hour_id):
+    print('Choose vehicle to repair: ')
+    conection = sqlite3.connect('vehicle_repair_manager.db')
+    cursor = conection.cursor()
+    all_vehicles = '''
+        SELECT *
+          FROM Vehicle
+          WHERE owner = (?)
+        '''
+
+    owner = user_id(user_name=user_name)
+    cursor.execute(all_vehicles, (owner, ))
+    conection.commit()
+    vehicles = cursor.fetchall()
+
+    ids = [x[0] for x in vehicles]
+    all_v = []
+
+    for x in vehicles:
+        vehicle = ''
+        for i in range(2, 5):
+            vehicle += ''.join(x[i] + ' ')
+            if i == 3:
+                vehicle += ''.join(' with RegNumber: ')
+
+        all_v.append(vehicle)
+
+    print(tabulate({'id': [el for el in ids], 'Vehicle': [el for el in all_v]}, headers='keys'))
+
+    choosen_vehicle = input('>>: ')
+
+    id_vehicle = '''
+        SELECT *
+          FROM Vehicle
+          WHERE id = (?)
+        '''
+
+    cursor.execute(id_vehicle, (choosen_vehicle, ))
+    conection.commit()
+
+    vehicle_fk = cursor.fetchone()
+
+    print('Choose service: ')
+    all_services = '''
+        SELECT *
+          FROM Service
+        '''
+    cursor.execute(all_services)
+    conection.commit()
+
+    services = cursor.fetchall()
+
+    print(tabulate([service for service in services], headers=['id', 'Service']))
+
+    choosen_service = input('>>: ')
+
+    id_mechanic_service = '''
+        SELECT *
+          FROM MechanicService
+          WHERE service_id = (?)
+        '''
+    cursor.execute(id_mechanic_service, (choosen_service, ))
+    conection.commit()
+
+    mechanic_service = cursor.fetchone()
+
+    update_repair_hour = '''
+        UPDATE RepairHour
+          SET vehicle = (?),
+              bill = (?),
+              mechanic_service = (?)
+          WHERE id = (?)
+        '''
+    bill = random.uniform(50, 1000)
+    cursor.execute(update_repair_hour, (vehicle_fk[0], bill, mechanic_service[0], hour_id))
+    cursor.execute('''SELECT * FROM RepairHour WHERE id =(?)''', (hour_id, ))
+    info = cursor.fetchone()
+
+    cursor.execute('''SELECT * FROM Service WHERE id =(?)''', (mechanic_service[2], ))
+    info_service = cursor.fetchone()
+
+    conection.commit()
+    conection.close()
+
+    print(f'''Thank you! You saved an hour on {info[1]}, at {info[2]} for {info_service[1]}!
+        Vehicle: {vehicle_fk[2]} {vehicle_fk[3]} with RegNumber: {vehicle_fk[4]}.''')
+
 
 def output_for_new_client(*, user_name):
     print(f'''
@@ -227,17 +318,17 @@ def menu(*, user_name):
             list_all_free_hours()
         elif 'list_free_hours' in command:
             list_free_hours(data=command.split(' ')[-1])
-        elif command in 'save_repair_hour <hour_id>':
+        elif 'save_repair_hour' in command:
+            save_repair_hour(user_name=user_name, hour_id=command.split(' ')[-1])
+        elif 'update_repair_hour' in command:
             pass
-        elif command in 'update_repair_hour <hour_id>':
-            pass
-        elif command in 'delete_repair_hour <hour_id>':
+        elif 'delete_repair_hour' in command:
             pass
         elif command == 'add_vehicle':
             add_vehicle(user_name=user_name)
-        elif command in 'update_vehicle <vehicle_id>':
+        elif 'update_vehicle' in command:
             pass
-        elif command in 'delete_vehicle <vehicle_id>':
+        elif 'delete_vehicle' in command:
             pass
         elif command == 'exit':
             exit = True
