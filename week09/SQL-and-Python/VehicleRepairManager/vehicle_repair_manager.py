@@ -1,11 +1,11 @@
 import sqlite3
-from utils import print_menu, output_for_new_client, user_id
+from utils import print_menu_client, print_menu_mechanic, output_for_new_client, user_id, in_database
 from create_tables import create_tables
-from functions_for_customer import (list_free_hours,
-                                    list_all_free_hours, save_repair_hour,
-                                    update_repair_hour, delete_repair_hour,
+from functions_for_customer import (save_repair_hour,
+                                    delete_repair_hour,
                                     update_vehicle, delete_vehicle,
                                     add_vehicle, list_personal_vehicles)
+from common_functions import list_free_hours, list_all_free_hours, update_repair_hour
 
 
 def add_new_client(*, user_name, phone_number, email, address):
@@ -48,7 +48,7 @@ def add_new_mechanic(*, user_name, phone_number, email, address, title):
 
 def menu_for_client(*, user_name):
     exit = False
-    print_menu()
+    print_menu_client(user_name=user_name)
 
     while exit is not True:
         command = input('command: ')
@@ -74,44 +74,45 @@ def menu_for_client(*, user_name):
             exit = True
 
 
-def checking_by_user_name(*, user_name):
-    connection = sqlite3.connect('vehicle_repair_manager.db')
-    cursor = connection.cursor()
-    search = '''
-        SELECT *
-          FROM BaseUser
-          WHERE user_name = (?)
-        '''
-    cursor.execute(search, (user_name, ))
-    user = cursor.fetchall()
-    if len(user) == 0:
+def menu_for_mechanic(*, user_name):
+    # exit = False
+    print_menu_mechanic(user_name=user_name)
+
+
+def login(*, username):
+    if not in_database(table='BaseUser', user_name=username):
         print('Unknown user!')
         new_user = input('Would you like to create new user? ')
+
         if new_user in ['yes', 'y']:
             type_user = input('Are you a Client or Mechanic? ')
             name = input('Provide user_name: ')
             phone_number = input('Provide phone_number: ')
             email = input('Provide email: ')
             address = input('Provide address: ')
+
             if type_user.lower() == 'client':
                 add_new_client(user_name=name, phone_number=phone_number, email=email, address=address)
                 output_for_new_client(user_name=name)
-                menu_for_client(user_name=user_name)
-            else:
+                menu_for_client(user_name=username)
+            elif type_user.lower() == 'mechanic':
                 title = input('Enter your title: ')
                 add_new_mechanic(user_name=name, phone_number=phone_number, email=email, address=address, title=title)
                 output_for_new_client(user_name=name)
                 # menu(user_name=user_name)
     else:
-        print(f'Hello, {user_name}!')
-        menu_for_client(user_name=user_name)
+        customer_id = user_id(user_name=username)
+        if in_database(table='Client', base_id=customer_id):
+            menu_for_client(user_name=username)
+        elif in_database(table='Mechanic', base_id=customer_id):
+            menu_for_mechanic(user_name=username)
 
 
 def main():
     create_tables()
     print('Hello!')
     user_name = input('Provide user name: ')
-    checking_by_user_name(user_name=user_name)
+    login(username=user_name)
 
 
 if __name__ == '__main__':
