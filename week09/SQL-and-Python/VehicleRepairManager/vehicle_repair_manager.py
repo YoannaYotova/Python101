@@ -4,8 +4,9 @@ from create_tables import create_tables
 from functions_for_customer import (save_repair_hour,
                                     delete_repair_hour,
                                     update_vehicle, delete_vehicle,
-                                    add_vehicle, list_personal_vehicles)
-from common_functions import list_free_hours, list_all_free_hours, update_repair_hour
+                                    add_vehicle, list_personal_vehicles, update_repair_hour)
+from common_functions import list_free_hours, list_all_free_hours
+from functions_for_mechanic import add_new_repair_hour, add_new_service
 
 
 def add_new_client(*, user_name, phone_number, email, address):
@@ -48,9 +49,9 @@ def add_new_mechanic(*, user_name, phone_number, email, address, title):
 
 def menu_for_client(*, user_name):
     exit = False
-    print_menu_client(user_name=user_name)
 
     while exit is not True:
+        print_menu_client(user_name=user_name)
         command = input('command: ')
         if command == 'list_all_free_hours':
             list_all_free_hours()
@@ -75,8 +76,26 @@ def menu_for_client(*, user_name):
 
 
 def menu_for_mechanic(*, user_name):
-    # exit = False
-    print_menu_mechanic(user_name=user_name)
+    exit = False
+    while exit is not True:
+        print_menu_mechanic(user_name=user_name)
+        command = input('command: ')
+        if command == 'list_all_free_hours':
+            list_all_free_hours()
+        elif 'list_free_hours' in command:
+            list_free_hours(data=command.split(' ')[-1])
+        elif 'update_repair_hour' in command:
+            pass
+        elif command == 'list_all_busy_hours':
+            pass
+        elif 'list_busy_hours' in command:
+            pass
+        elif command == 'add_new_repair_hour':
+            add_new_repair_hour()
+        elif 'add_new_service' == command:
+            add_new_service()
+        elif command == 'exit':
+            exit = True
 
 
 def login(*, username):
